@@ -16,9 +16,10 @@ import { Autocomplete, TextField, Drawer } from "@mui/material";
 import dayjs from "dayjs";
 import { useStyles } from "./style.js";
 import Skeleton from "@mui/material/Skeleton";
+import Button from "@mui/material/Button";
+
 
 const roles = ["Developer", "Designer", "Manager", "Tester"];
-
 const DataGridDemo = () => {
   const classes = useStyles();
   const [loading, setLoading] = React.useState(true);
@@ -29,8 +30,26 @@ const DataGridDemo = () => {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
+    localStorage.setItem("Pdf1", "/pdf1.pdf");
+    localStorage.setItem("pdf_2", "/pdf_2.pdf");
+
   }, []);
 
+  const handleOpenPdf = (pdfKey) => {
+    if (!pdfKey) {
+      alert("Invalid PDF reference!");
+      return;
+    }
+    const pdfUrl = localStorage.getItem(pdfKey);
+    if (pdfUrl) {
+      const newWindow = window.open(pdfUrl, "_blank");
+      if (!newWindow || newWindow.closed) {
+        alert("Pop-up blocked! Please allow pop-ups for this site.");
+      }
+    } else {
+      alert("PDF not found!");
+    }
+  };
   const handleCellClick = (params) => {
     if (params.field === "id") {
       setSelectedRowData(params.row);
@@ -162,13 +181,13 @@ const DataGridDemo = () => {
               })
             }
             sx={{
-                "& .MuiInputBase-input": {
-                  fontSize: "12px",
-                },
-                "& .inputField": {
-                  fontSize: "12px",
-                },
-              }}
+              "& .MuiInputBase-input": {
+                fontSize: "12px",
+              },
+              "& .inputField": {
+                fontSize: "12px",
+              },
+            }}
           />
         ),
     },
@@ -245,8 +264,8 @@ const DataGridDemo = () => {
               params.value === "Active"
                 ? "success"
                 : params.value === "Pending"
-                ? "warning"
-                : "default"
+                  ? "warning"
+                  : "default"
             }
             variant="outlined"
           />
@@ -275,6 +294,28 @@ const DataGridDemo = () => {
           </div>
         ),
     },
+    {
+      field: "pdf",
+      headerName: "PDF",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => (
+        loading ? (
+          <Skeleton variant="rounded" width={200}>
+            <Avatar />
+          </Skeleton>
+        ) :
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => handleOpenPdf(params.value)}
+          >
+            Open PDF
+          </Button>
+      ),
+    },
   ];
 
   const rows = [
@@ -288,6 +329,7 @@ const DataGridDemo = () => {
       badge: 1,
       chip: "Active",
       progressbar: 80,
+      pdf: "Pdf1"
     },
     {
       id: 2,
@@ -299,6 +341,7 @@ const DataGridDemo = () => {
       badge: 3,
       chip: "Pending",
       progressbar: 50,
+      pdf: "pdf_2"
     },
     {
       id: 3,
